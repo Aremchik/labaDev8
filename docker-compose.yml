@@ -32,9 +32,9 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  csharp_service:
+  micro1:
     build:
-      context: ./csharp_service
+      context: ./micro1
       dockerfile: Dockerfile
     environment:
       - DB_HOST=postgres
