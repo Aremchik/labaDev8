@@ -4,6 +4,8 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Конфигурация сервисов
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IDataService, DataService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

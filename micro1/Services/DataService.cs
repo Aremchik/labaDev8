@@ -1,19 +1,12 @@
-public interface IDataService
-{
-    Task<UserData> ProcessUserData(UserInput input);
-}
-
 public class DataService : IDataService
 {
     private readonly AppDbContext _db;
-    private readonly HttpClient _httpClient;
-    private readonly string _pythonServiceUrl;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public DataService(AppDbContext db, IConfiguration config)
+    public DataService(AppDbContext db, IHttpClientFactory httpClientFactory)
     {
         _db = db;
-        _httpClient = new HttpClient();
-        _pythonServiceUrl = config["PYTHON_SERVICE_URL"];
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task<UserData> ProcessUserData(UserInput input)
@@ -26,21 +19,7 @@ public class DataService : IDataService
         
         _db.UserData.Add(userData);
         await _db.SaveChangesAsync();
-
-        // Отправка в Python сервис
-        var processedData = new
-        {
-            original_name = input.Name,
-            processed_name = input.Name.ToUpper(),
-            email = input.Email,
-            timestamp = DateTime.UtcNow
-        };
-
-        var response = await _httpClient.PostAsJsonAsync(
-            $"{_pythonServiceUrl}/process", 
-            processedData);
-        response.EnsureSuccessStatusCode();
-
+        
         return userData;
     }
 }
