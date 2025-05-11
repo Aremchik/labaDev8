@@ -35,9 +35,9 @@ services:
     restart: unless-stopped
 
   # C# Microservice (Микросервис 1)
-  csharp_service:
+  micro1:
     build:
-      context: ./csharp_service
+      context: ./micro1
       dockerfile: Dockerfile
     environment:
       - DB_HOST=postgres
