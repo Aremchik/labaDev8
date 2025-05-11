@@ -11,7 +11,7 @@ public class DataService : IDataService
 
     public async Task<UserData> ProcessUserData(UserInput input)
     {
-        // Сохраняем в свою БД
+    
         var userData = new UserData
         {
             Name = input.Name,
@@ -21,17 +21,15 @@ public class DataService : IDataService
         _db.UserData.Add(userData);
         await _db.SaveChangesAsync();
 
-        // Создаём клиент и отправляем данные в Python микросервис
         var client = _httpClientFactory.CreateClient();
 
         try
         {
             var response = await client.PostAsJsonAsync("http://python_service:8000/raw_user/", input);
-            response.EnsureSuccessStatusCode(); // выбросит исключение при ошибке
+            response.EnsureSuccessStatusCode(); 
         }
         catch (Exception ex)
         {
-            // Логировать можно через ILogger — здесь просто вывод
             Console.WriteLine($"Ошибка при отправке в Python-сервис: {ex.Message}");
         }
 
