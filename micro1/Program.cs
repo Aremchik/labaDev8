@@ -24,9 +24,16 @@ if (app.Environment.IsDevelopment())
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
     });
+    
+    // Отключаем HTTPS редирект в development
+    app.Logger.LogInformation("Running in Development mode - HTTPS redirection disabled");
+}
+else
+{
+    // Включаем HTTPS редирект в production
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
