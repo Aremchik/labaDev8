@@ -1,12 +1,11 @@
 version: "3.8"
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_USER: ${DB_USER:-admin} # Изменил дефолтного пользователя
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
       POSTGRES_DB: ${DB_NAME:-appdb}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -14,17 +13,16 @@ services:
       - "5432:5432"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  # pgAdmin - Database Management
   pgadmin:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     ports:
@@ -34,15 +32,14 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # C# Microservice (Микросервис 1)
-  micro1:
+  csharp_service:
     build:
-      context: ./micro1
+      context: ./csharp_service
       dockerfile: Dockerfile
     environment:
       - DB_HOST=postgres
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_USER=${DB_USER:-admin}
+      - DB_PASSWORD=${DB_PASSWORD:-admin123}
       - DB_NAME=${DB_NAME:-appdb}
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
