@@ -1,19 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using CSharpService.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Конфигурация Kestrel
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(80);
-    serverOptions.ListenAnyIP(443, listenOptions => 
-    {
-        listenOptions.UseHttps();
-    });
-});
-
-// Добавление сервисов
+// Конфигурация сервисов
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -45,11 +36,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection(options =>
-{
-    options.HttpsPort = 443;
-});
-
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
@@ -61,20 +48,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
-// Класс контекста БД (можно вынести в отдельный файл)
-public class AppDbContext : DbContext
-{
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-    
-    public DbSet<UserData> UserData { get; set; }
-}
-
-// Модель данных (можно вынести в Models/UserData.cs)
-public class UserData
-{
-    public int Id { get; set; }
-    public string? Name { get; set; }
-    public string? Email { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-}
