@@ -42,7 +42,16 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
+  python_service:
+    build:
+      context: ./micro2
+    environment:
+      - DATABASE_URL=postgresql://admin:admin123@postgres/appdb
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
 volumes:
   postgres_data:
   pgadmin_data:
